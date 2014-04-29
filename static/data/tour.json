@@ -1,0 +1,51 @@
+
+[
+  {
+    "project_id":179,
+    "title":"Räuschling 2011",
+    "year":2007,
+    "lat":46.2,
+    "lon":6.1,
+    "description":"<p><b>Un vin agréable, très suisse dans son expression neutre et retenue, idéal pour accompagner un poisson du lac</b></p><p>C’est de l’exotisme de proximité. Cépage autochtone méconnu, le räuschling est un peu le chasselas de la Suisse alémanique. A une nuance importante près: il a failli disparaître, relégué par le riesling-sylvaner, plus productif et moins fragile. Il recouvre aujourd’hui moins de 30 hectares, principalement dans le canton de Zurich. Il fait partie des spécialités préférées de Cédric Besson et de sa femme Nadine Besson-Strasser, jeunes vignerons-encaveurs installés à Uhwiesen, à un jet de pierre des chutes du Rhin.</b></p><p><a href='http://www.letemps.ch/Page/Uuid/1a8074d4-b1a5-11e1-a67a-d0cf93cfcd4b/R%C3%A4uschling_2011_Winzerkeller_Strasser' target='_blank'>Lire la suite sur le Temps.ch</a></p><p><img src='https://cdn1.iconfinder.com/data/icons/free-mobile-icon-kit/32/Grapes.png'> MERLOT / CHASSELAT &nbsp;&nbsp;&nbsp;<img src='https://cdn1.iconfinder.com/data/icons/iconsweets2/40/red_wine.png' height='32'>PRIX : CHF 32</p>",
+    "usd_defl":836149339.6,
+    "alt":"",
+    "recipient_oecd_name":"Winzerkeller Strasser",
+    "img_credit":"nasamarshall/Flickr",
+    "img_credit_url":"http://www.flickr.com/photos/nasamarshall/5114255561/sizes/",
+    "img":"dam.jpg"
+  },
+  {
+    "project_id":95,
+    "title":"Lagos-Kano Railway",
+    "long_title":"Lagos-Kano railway",
+    "year":2006,
+    "lat":46.45,
+    "lon":6.41,
+    "description":"<p><b>Un vin agréable, très suisse dans son expression neutre et retenue, idéal pour accompagner un poisson du lac</b></p><p>C’est de l’exotisme de proximité. Cépage autochtone méconnu, le räuschling est un peu le chasselas de la Suisse alémanique. A une nuance importante près: il a failli disparaître, relégué par le riesling-sylvaner, plus productif et moins fragile. Il recouvre aujourd’hui moins de 30 hectares, principalement dans le canton de Zurich. Il fait partie des spécialités préférées de Cédric Besson et de sa femme Nadine Besson-Strasser, jeunes vignerons-encaveurs installés à Uhwiesen, à un jet de pierre des chutes du Rhin.</b></p><p><br><p><img src='https://cdn1.iconfinder.com/data/icons/iconsweets2/40/red_wine.png'> PRIX : CHF 32</p>",
+    "crs_sector_name":"Transport and Storage",
+    "recipient_oecd_name":"Nigeria",
+    "img":"railway.jpg",
+    "img_credit":"jbdodane/Flickr",
+    "img_credit_url":"http://www.flickr.com/photos/jbdodane/11984031805/",
+    "alt":"credit"
+  
+
+  },
+  {
+    "project_id":105,
+    "title":"Lagos-Kano Railway",
+    "long_title":"Lagos-Kano railway",
+    "year":2006,
+    "lat":47.45,
+    "lon":9.41,
+    "description":"<p>The Chinese Civil Engineering Construction Corporation was awarded the contract for the modernization of Nigeria's 1,313 km railway from Lagos to Kano. The journey currently takes 31 hours, but the government plans to reduce it to 24. The project is worth $8 billion and China has soft-loaned the Nigerian government at least $500 million to finance the project. </p> <p>In addition to boosting trade, some believe that the train can help unite Nigeria. The country has been wracked by periodic episodes of violence for decades. Nigeria's 150 million people are divided between the mostly Muslim north and Christian and animist south.</p><p><div class=\"img_credit\">Photo: <a href=\"http://www.flickr.com/photos/jbdodane/11984031805/\" target=\"_blank\">jbdodane/Flickr</a></div></p>",
+    "crs_sector_name":"Transport and Storage",
+    "recipient_oecd_name":"Nigeria",
+    "img":"railway.jpg",
+    "img_credit":"jbdodane/Flickr",
+    "img_credit_url":"http://www.flickr.com/photos/jbdodane/11984031805/",
+    "alt":"credit"
+  
+
+  }
+]

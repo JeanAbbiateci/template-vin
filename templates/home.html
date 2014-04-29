@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container-full on-loading">
+	<div id="loader"></div>
+	<!-- APP -->	
+	<row>
+		<div class="col-xs-6" >
+		
+			<div> {% include "map.html" %} </div>
+
+		</div>
+		{% include "panel.html" %}
+	</row>
+
+	<footer>
+		<p class="logojpp">
+		
+		</p>
+
+		<p class="credit">
+		</p>
+	</footer>
+
+	
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,590 @@
+var AfricaMap, Chart, MODE_INTRO, MODE_OVERVIEW, MODE_OVERVIEW_INTRO, MODE_START_OVERVIEW, MODE_TOUR, Navigation, Panel, abbreviateNumber,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+abbreviateNumber = function(value) {
+  var dotLessShortValue, newValue, precision, shortNum, shortValue, suffixNum, suffixes;
+  newValue = value;
+  if (value >= 1000) {
+    suffixes = ["", "k", "m", "b", "t"];
+    suffixNum = Math.floor(("" + value).length / 3);
+    shortValue = "";
+    precision = 2;
+    while (precision >= 1) {
+      shortValue = parseFloat((suffixNum !== 0 ? value / Math.pow(1000, suffixNum) : value).toPrecision(precision));
+      dotLessShortValue = (shortValue + "").replace(/[^a-zA-Z 0-9]+/g, "");
+      if (dotLessShortValue.length <= 2) {
+        break;
+      }
+      precision--;
+    }
+    if (shortValue % 1 !== 0) {
+      shortNum = shortValue.toFixed(1);
+    }
+    newValue = shortValue + suffixes[suffixNum];
+  }
+  return newValue;
+};
+
+AfricaMap = (function() {
+  var CONFIG;
+
+  CONFIG = {
+    close_zoom: 3,
+    radius_circle_tour: 6,
+    scale_range_overview: [4, 15],
+    transition_map_duration: 1000,
+    transition_circle_duration: 500,
+    transition_circle_ease: "easeInSine"
+  };
+
+  function AfricaMap(navigation, countries, projects, overview) {
+    this.onModeChanged = __bind(this.onModeChanged, this);
+    this.drawOverviewCircles = __bind(this.drawOverviewCircles, this);
+    this.onOverviewSelected = __bind(this.onOverviewSelected, this);
+    this.onProjectSelected = __bind(this.onProjectSelected, this);
+    this.drawProjectCircles = __bind(this.drawProjectCircles, this);
+    this.drawCircles = __bind(this.drawCircles, this);
+    this.relayout = __bind(this.relayout, this);
+    this.navigation = navigation;
+    this.countries = countries;
+    this.projects = projects;
+    this.overview = overview;
+    this.current_mode = void 0;
+    this.svg = d3.select(".africa-container").insert("svg", ":first-child");
+    this.group = this.svg.append("g");
+    this.groupPaths = this.group.append("g").attr("class", "all-path");
+    this.groupOverview = this.group.append("g").attr("class", "all-overview-points");
+    this.groupProject = this.group.append("g").attr("class", "all-project-points");
+    this.relayout();
+    $(document).on("modeChanged", this.onModeChanged);
+    $(document).on("projectSelected", this.onProjectSelected);
+    $(document).on("overviewSelected", this.onOverviewSelected);
+    $(window).resize(this.relayout);
+  }
+
+  AfricaMap.prototype.relayout = function() {
+    this.width = $(".africa-container").width();
+    this.height = this.width * 1;
+    if (this.height > $(window).height()) {
+      this.height = $(window).height();
+      this.width = this.height / 1;
+    }
+    this.svg = d3.select(".africa-container svg").attr("width", this.width * 2).attr("height", $(window).height());
+    this.projection = d3.geo.mercator().scale(5500).translate([this.width / 2 - 780, this.height / 2 + 5150]);
+    this.path = d3.geo.path().projection(this.projection);
+    this.groupPaths.selectAll("path").remove();
+    this.groupPaths.selectAll("path").data(this.countries).enter().append("path").attr("d", this.path);
+    if (this.current_mode === "overview") {
+      return this.drawOverviewCircles();
+    } else {
+      return this.drawProjectCircles();
+    }
+  };
+
+  AfricaMap.prototype.drawCircles = function(scale_or_radius, radius_field_name, appearing_animatation) {
+    var get_radius, that;
+    if (radius_field_name == null) {
+      radius_field_name = "usd_defl";
+    }
+    if (appearing_animatation == null) {
+      appearing_animatation = true;
+    }
+    that = this;
+    get_radius = function(d) {
+      /* return the radius, depending of the type of scale_or_radius*/
+
+      if (typeof scale_or_radius === "number") {
+        return scale_or_radius;
+      } else {
+        return scale_or_radius(parseFloat(d[radius_field_name]));
+      }
+    };
+    return this.circles.each(function(d) {
+      d3.select(this).attr("cx", function(d) {
+        return that.projection([d.lon, d.lat])[0];
+      }).attr("cy", function(d) {
+        return that.projection([d.lon, d.lat])[1];
+      });
+      if (appearing_animatation) {
+        return d3.select(this).attr("r", 0).transition().ease(CONFIG.transition_circle_ease).duration(CONFIG.transition_circle_duration).delay(CONFIG.transition_map_duration).attr("r", get_radius);
+      } else {
+        return d3.select(this).attr("r", get_radius);
+      }
+    });
+  };
+
+  AfricaMap.prototype.drawProjectCircles = function() {
+    var that;
+    that = this;
+    this.groupOverview.selectAll("circle").transition().ease(CONFIG.transition_circle_ease).duration(CONFIG.transition_circle_duration).attr("r", 0).remove();
+    this.circles = this.groupProject.selectAll("circle").data(this.projects);
+    this.circles.enter().append("circle").on('click', function(d) {
+      return that.navigation.setProject(d);
+    });
+    this.drawCircles(CONFIG.radius_circle_tour);
+    return this.circles.each(function(d) {
+      return $(d3.select(this)).qtip({
+        content: "" + d.title + "<br/>" + d.recipient_oecd_name,
+        style: 'qtip-dark'
+      });
+    });
+  };
+
+  AfricaMap.prototype.onProjectSelected = function(e, project) {
+    var offset_x, offset_y, selected;
+    this.circles.each(function(d, i) {
+      return d3.select(this).classed("active", project === d);
+    });
+    selected = this.circles.filter(function(d) {
+      return d === project;
+    });
+    if (project != null) {
+      offset_x = -(parseFloat(selected.attr("cx")) * CONFIG.close_zoom - this.width / 2);
+      offset_y = -(parseFloat(selected.attr("cy")) * CONFIG.close_zoom - this.height / 2);
+      return this.group.selectAll("path, circle").transition().duration(CONFIG.transition_map_duration).attr("transform", "translate(" + offset_x + ", " + offset_y + ")scale(" + CONFIG.close_zoom + ")");
+    } else {
+      return this.group.selectAll("path, circle").transition().duration(CONFIG.transition_map_duration).delay(CONFIG.transition_circle_duration).attr("transform", "translate(0,0)scale(1)");
+    }
+  };
+
+  AfricaMap.prototype.onOverviewSelected = function(e, country) {
+    /* color the circle on the map*/
+
+    return this.circles.each(function(d, i) {
+      return d3.select(this).classed("active", country === d);
+    });
+  };
+
+  AfricaMap.prototype.drawOverviewCircles = function() {
+    var scale, that, values;
+    that = this;
+    values = this.overview.map(function(d) {
+      return parseFloat(d.USD);
+    });
+    scale = d3.scale.linear().domain([Math.min.apply(Math, values), Math.max.apply(Math, values)]).range(CONFIG.scale_range_overview);
+    this.groupProject.selectAll("circle").transition().ease(CONFIG.transition_circle_ease).duration(CONFIG.transition_circle_duration).attr("r", 0).remove();
+    this.circles = this.groupOverview.selectAll("circle").data(this.overview);
+    this.circles.enter().append("circle").on('click', function(d) {
+      return that.navigation.setOverview(d);
+    });
+    this.drawCircles(scale, "USD");
+    return this.circles.each(function(d) {
+      return $(d3.select(this)).qtip({
+        content: "" + d.Country,
+        style: 'qtip-dark'
+      });
+    });
+  };
+
+  AfricaMap.prototype.onModeChanged = function(e, mode) {
+    if (mode === MODE_OVERVIEW || mode === MODE_OVERVIEW_INTRO) {
+      if (this.current_mode !== "overview") {
+        this.current_mode = "overview";
+        return this.drawOverviewCircles();
+      }
+    } else if (this.current_mode !== "project") {
+      this.current_mode = "project";
+      return this.drawProjectCircles();
+    }
+  };
+
+  return AfricaMap;
+
+})();
+
+Panel = (function() {
+  var CONFIG;
+
+  CONFIG = {
+    default_picture: "main.jpg",
+    default_title: "Coucou les mous du genoux"
+  };
+
+  function Panel(navigation) {
+    this.onModeChanged = __bind(this.onModeChanged, this);
+    this.onOverviewSelected = __bind(this.onOverviewSelected, this);
+    this.onProjectSelected = __bind(this.onProjectSelected, this);
+    this.changeIllustration = __bind(this.changeIllustration, this);
+    this.relayout = __bind(this.relayout, this);
+    var _this = this;
+    this.navigation = navigation;
+    this.ui = $(".Panel");
+    this.uis = {
+      all_views: $(".Panel .view"),
+      views: {
+        intro: $(".view.intro_main", this.ui),
+        single_project: $(".view.single_project", this.ui),
+        start_overview: $(".view.start_overview", this.ui),
+        overview_intro: $(".view.overview_intro", this.ui),
+        overview: $(".view.overview", this.ui)
+      },
+      navigation_btn: $(".navigation-buttons", this.ui),
+      prv_button: $(".prv_button", this.ui),
+      nxt_button: $(".nxt_button", this.ui),
+      tour_button: $(".tour_button", this.ui),
+      overview_button: $(".overview_button", this.ui),
+      title: $(".img_container .title", this.ui),
+      img: $(".img_container", this.ui),
+      project: {
+        description: $(".single_project .description .wrapper", this.ui)
+      },
+      overview: {
+        amount: $(".overview #tot_usd", this.ui),
+        nb_projects: $(".overview #tot_prj", this.ui)
+      }
+    };
+    this.chartWidget = new Chart();
+    $(window).resize(this.relayout);
+    $(document).on('projectSelected', this.onProjectSelected);
+    $(document).on('overviewSelected', this.onOverviewSelected);
+    $(document).on('modeChanged', this.onModeChanged);
+    $(document).on('loading', this.onLoadingChanged);
+    this.uis.prv_button.on('click', this.navigation.previousProject);
+    this.uis.nxt_button.on('click', this.navigation.nextProject);
+    this.uis.tour_button.on('click', function() {
+      return _this.navigation.setMode(MODE_TOUR);
+    });
+    this.uis.overview_button.on('click', function() {
+      return _this.navigation.setMode(MODE_OVERVIEW_INTRO);
+    });
+    this.relayout();
+  }
+
+  Panel.prototype.relayout = function() {
+    var description, navigation_btn;
+    description = $($(".Panel .description").get(this.navigation.mode));
+    navigation_btn = $(this.uis.navigation_btn.get(this.navigation.mode));
+    description.css({
+      height: $(window).height() - description.offset().top - navigation_btn.outerHeight(true)
+    });
+    return this.uis.img.css({
+      height: Math.min(300, $(window).height() * .4)
+    });
+  };
+
+  Panel.prototype.changeIllustration = function(img, title, transition) {
+    var that;
+    if (img == null) {
+      img = CONFIG.default_picture;
+    }
+    if (title == null) {
+      title = CONFIG.default_title;
+    }
+    if (transition == null) {
+      transition = true;
+    }
+    that = this;
+    if (transition) {
+      return this.uis.img.fadeOut(function() {
+        var nui;
+        nui = $(this).css("background-image", "url('static/images/" + img + "')");
+        that.uis.title.html(title);
+        return nui.fadeIn();
+      });
+    } else {
+      this.uis.img.css("background-image", "url('static/images/" + img + "')");
+      return this.uis.title.html(title);
+    }
+  };
+
+  Panel.prototype.onProjectSelected = function(e, project) {
+    if (project != null) {
+      this.changeIllustration(project.img, "" + project.title + ", " + project.recipient_oecd_name);
+      this.uis.project.description.html(project.description);
+      this.uis.project.description.parent().scrollTop(0);
+      return $($(".Panel .description").get(this.navigation.mode)).perfectScrollbar();
+    } else {
+      return this.changeIllustration(null, null, false);
+    }
+  };
+
+  Panel.prototype.onOverviewSelected = function(e, country) {
+    var details;
+    if (country != null) {
+      details = this.navigation.data.projects_details.get(country.Country);
+      this.uis.title.html(country.Country);
+      this.uis.overview.amount.html(abbreviateNumber(country.USD));
+      this.uis.overview.nb_projects.html(details['total']);
+      this.chartWidget.render(details);
+      return this.changeIllustration(null, country.Country, false);
+    } else {
+      return this.changeIllustration();
+    }
+  };
+
+  Panel.prototype.onModeChanged = function(e, mode) {
+    /* hide all the views, show the wanted one*/
+
+    this.uis.all_views.addClass("hidden");
+    if (mode === MODE_INTRO) {
+      this.uis.views.intro.removeClass("hidden");
+    }
+    if (mode === MODE_TOUR) {
+      this.uis.views.single_project.removeClass("hidden");
+    }
+    if (mode === MODE_START_OVERVIEW) {
+      this.uis.views.start_overview.removeClass("hidden");
+    }
+    if (mode === MODE_OVERVIEW_INTRO) {
+      this.uis.views.overview_intro.removeClass("hidden");
+    }
+    if (mode === MODE_OVERVIEW) {
+      this.uis.views.overview.removeClass("hidden");
+    }
+    $($(".Panel .description").get(this.navigation.mode)).perfectScrollbar();
+    if (mode === MODE_INTRO) {
+      this.changeIllustration();
+    }
+    return this.relayout();
+  };
+
+  return Panel;
+
+})();
+
+Chart = (function() {
+  function Chart() {
+    this.render = __bind(this.render, this);
+    this.ui = ".chart";
+  }
+
+  Chart.prototype.render = function(details) {
+    var barLabels, chart, dataset, formatxAxis, h, margin, max, w, x, xAxis, y, yAxis;
+    margin = {
+      top: 20,
+      right: 0,
+      bottom: 100,
+      left: 50
+    };
+    w = 300 - margin.left - margin.right;
+    h = 250 - margin.top - margin.bottom;
+    d3.select(this.ui).select("svg").remove();
+    chart = d3.select(this.ui).append("svg").attr("width", w + margin.left + margin.right).attr("height", h + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    dataset = {};
+    dataset["Transport/Comm."] = +details.transport;
+    dataset["Agriculture/Water"] = +details.agriculture;
+    dataset["Education/Culture"] = +details.education;
+    dataset["Energy"] = +details.energy;
+    dataset["Government"] = +details.govt;
+    dataset["Health/Emerg."] = +details.health;
+    dataset["Other"] = +details.other;
+    dataset["Mining/Industry"] = +details.industry;
+    barLabels = _.keys(dataset);
+    max = Math.max.apply(Math, _.values(dataset));
+    formatxAxis = d3.format('.0f');
+    x = d3.scale.ordinal().rangeRoundBands([0, w], .1);
+    y = d3.scale.linear().range([h, 0]);
+    xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(0);
+    yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(formatxAxis).ticks(5);
+    x.domain(_.keys(dataset));
+    y.domain([0, max]);
+    chart.append("g").attr("class", "x axis").attr("transform", "translate(0," + h + ")").call(xAxis).selectAll('text').style('text-anchor', 'end').attr('transform', 'rotate(-45)');
+    chart.append("g").attr("class", "y axis").call(yAxis);
+    return chart.selectAll(".bar").data(_.pairs(dataset)).enter().append("rect").attr("y", h).attr("height", 0).on('mouseover', function(d) {
+      d3.select(this).transition().duration(200).attr('fill', '#973b3b');
+      return chart.append('text').text(d[1]).attr('x', x(d[0]) + x.rangeBand() / 2).attr('y', y(d[1]) + 15).attr('class', 'value_bar');
+    }).on('mouseout', function(d) {
+      d3.select(this).transition().duration(200).attr('fill', '#fb9d04');
+      return chart.select('text.value_bar').remove();
+    }).transition().ease("elastic").duration(2000).attr("class", "bar").attr("x", function(d) {
+      return x(d[0]);
+    }).attr("width", x.rangeBand()).attr("height", function(d) {
+      return h - y(d[1]);
+    }).attr("y", function(d) {
+      return y(d[1]);
+    }).attr("fill", "#fb9d04");
+  };
+
+  return Chart;
+
+})();
+
+MODE_INTRO = 0;
+
+MODE_TOUR = 1;
+
+MODE_START_OVERVIEW = 2;
+
+MODE_OVERVIEW_INTRO = 3;
+
+MODE_OVERVIEW = 4;
+
+Navigation = (function() {
+  var CONFIG;
+
+  CONFIG = {
+    urls: {
+      geojson: "static/data/swiss.topo.json",
+      geojson: "static/data/swiss.topo.csv",
+      tour: "static/data/tour.json",
+      overview: "static/data/global_view.json",
+      projects_details: "static/data/chart_aiddata.csv"
+    }
+  };
+
+  function Navigation() {
+    this.loadImage = __bind(this.loadImage, this);
+    this.onSwitchRadioClick = __bind(this.onSwitchRadioClick, this);
+    this.hasPrevious = __bind(this.hasPrevious, this);
+    this.hasNext = __bind(this.hasNext, this);
+    this.previousProject = __bind(this.previousProject, this);
+    this.nextProject = __bind(this.nextProject, this);
+    this.setOverview = __bind(this.setOverview, this);
+    this.setProject = __bind(this.setProject, this);
+    this.setMode = __bind(this.setMode, this);
+    this.toggleLoading = __bind(this.toggleLoading, this);
+    this.loadedDataCallback = __bind(this.loadedDataCallback, this);
+    this.init = __bind(this.init, this);
+    var current_overview;
+    this.mode = void 0;
+    this.current_project = void 0;
+    current_overview = void 0;
+    this.is_loading = true;
+    this.data = {
+      projects: void 0,
+      overview: void 0,
+      projects_details: void 0
+    };
+    this.map = void 0;
+    this.panel = void 0;
+    this.uis = {
+      page: $(".container:first"),
+      switch_mode_radio: $(".toggle-radio input[name=ab]")
+    };
+    this.uis.switch_mode_radio.on("click", this.onSwitchRadioClick);
+  }
+
+  Navigation.prototype.init = function() {
+    var file, q, _i, _len;
+    q = queue();
+    q.defer(d3.json, CONFIG.urls.geojson).defer(d3.json, CONFIG.urls.tour).defer(d3.json, CONFIG.urls.overview).defer(d3.csv, CONFIG.urls.projects_details);
+    for (_i = 0, _len = files_to_preload.length; _i < _len; _i++) {
+      file = files_to_preload[_i];
+      q.defer(this.loadImage, file);
+    }
+    return q.await(this.loadedDataCallback);
+  };
+
+  Navigation.prototype.loadedDataCallback = function(error, geojson, tour, overview, projects_details) {
+    var geo_features, p, _i, _len;
+    this.data.projects = tour;
+    this.data.overview = overview;
+    this.data.projects_details = d3.map();
+    for (_i = 0, _len = projects_details.length; _i < _len; _i++) {
+      p = projects_details[_i];
+      this.data.projects_details.set(p.country, p);
+    }
+    geo_features = topojson.feature(geojson, geojson.objects.swisscantons).features;
+    this.map = new AfricaMap(this, geo_features, this.data.projects, this.data.overview);
+    this.panel = new Panel(this);
+    this.setMode(MODE_INTRO);
+    return this.toggleLoading(false);
+  };
+
+  Navigation.prototype.toggleLoading = function(is_loading) {
+    this.is_loading = is_loading || !this.is_loading;
+    $(".container-full").toggleClass("on-loading", this.is_loading);
+    return $(document).trigger("loading", this.is_loading);
+  };
+
+  Navigation.prototype.setMode = function(mode) {
+    if (this.mode !== mode) {
+      this.mode = mode;
+      if (this.mode === MODE_TOUR) {
+        if (this.current_project != null) {
+          this.setProject(this.current_project);
+        } else {
+          this.setProject(0);
+        }
+      } else {
+        this.setProject(null);
+      }
+      if (this.mode === MODE_OVERVIEW_INTRO) {
+        this.setOverview(null);
+      }
+      if (this.mode === MODE_TOUR) {
+        this.uis.switch_mode_radio.prop('checked', false).filter("[value=tour]").prop('checked', true);
+      } else if (this.mode === MODE_OVERVIEW || this.mode === MODE_OVERVIEW_INTRO) {
+        this.uis.switch_mode_radio.prop('checked', false).filter("[value=overview]").prop('checked', true);
+      }
+      return $(document).trigger("modeChanged", this.mode);
+    }
+  };
+
+  Navigation.prototype.setProject = function(project) {
+    "use this function to set a project.\nit will trigger a projectSelected event that all the other widget\nare able to bind.";
+    if ((project != null) && typeof project === "object") {
+      project = this.data.projects.indexOf(project);
+    }
+    if (project !== this.current_project) {
+      this.current_project = project;
+      if (project != null) {
+        this.setMode(MODE_TOUR);
+      }
+      return $(document).trigger("projectSelected", this.current_project != null ? this.data.projects[this.current_project] : null);
+    }
+  };
+
+  Navigation.prototype.setOverview = function(country) {
+    "use this function to select a country in the overview mode.\nit will trigger an overviewSelected event that all the other widget\nare able to bind.";
+    if ((country != null) && typeof country === "object") {
+      country = this.data.overview.indexOf(country);
+    }
+    if (country !== this.current_overview) {
+      this.current_overview = country;
+      if (country != null) {
+        this.setMode(MODE_OVERVIEW);
+      }
+      return $(document).trigger("overviewSelected", this.current_overview != null ? this.data.overview[this.current_overview] : null);
+    }
+  };
+
+  Navigation.prototype.nextProject = function() {
+    if (this.hasNext()) {
+      return this.setProject(this.data.projects[this.current_project + 1]);
+    } else {
+      return this.setMode(MODE_START_OVERVIEW);
+    }
+  };
+
+  Navigation.prototype.previousProject = function() {
+    if (this.hasPrevious()) {
+      return this.setProject(this.data.projects[this.current_project - 1]);
+    } else {
+      return this.setMode(MODE_INTRO);
+    }
+  };
+
+  Navigation.prototype.hasNext = function() {
+    return this.current_project < this.data.projects.length - 1;
+  };
+
+  Navigation.prototype.hasPrevious = function() {
+    return this.current_project > 0;
+  };
+
+  Navigation.prototype.onSwitchRadioClick = function() {
+    var val;
+    val = this.uis.switch_mode_radio.filter(":checked").val();
+    if (val === "overview") {
+      return this.setMode(MODE_OVERVIEW_INTRO);
+    } else {
+      return this.setMode(MODE_INTRO);
+    }
+  };
+
+  Navigation.prototype.loadImage = function(src, cb) {
+    var img;
+    img = new Image();
+    img.src = src;
+    img.onload = function() {
+      return cb(null, img);
+    };
+    return img.onerror = function() {
+      return cb('IMAGE ERROR', null);
+    };
+  };
+
+  return Navigation;
+
+})();

@@ -1,0 +1,326 @@
+body {
+  background-image: url("../images/zartevilt.png");
+  color: #e1e1e1;
+  overflow: hidden;
+  font-family: 'Droid Serif', serif;
+}
+
+body a {
+  color: #fb9d04;
+}
+
+body a:hover {
+  color: #fcb136;
+}
+
+.container-full {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.grid {
+  background-color: white;
+  margin-bottom: -99999px;
+  padding-bottom: 99999px;
+}
+
+.btn {
+  background-color: #fb9d04;
+  border-color: transparent;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -o-border-radius: 2px;
+  -ms-border-radius: 2px;
+}
+
+.btn:active,
+.btn:focus {
+  background-color: #c97e03;
+}
+
+.btn:hover {
+  background-color: #643f02;
+}
+
+.ps-container .ps-scrollbar-y-rail:hover,
+.ps-container .ps-scrollbar-y-rail.hover {
+  background-color: #2c2a2a;
+}
+
+.Panel {
+  background-color: #ffffff;
+  box-shadow: 0 -2px 2px 0 #000000;
+  -moz-box-shadow: 0 -2px 2px 0 #000000;
+  -webkit-box-shadow: 0 -2px 2px 0 #000000;
+  -o-box-shadow: 0 -2px 2px 0 #000000;
+  -ms-box-shadow: 0 -2px 2px 0 #000000;
+  color: #0e1b1e;
+  padding: 0;
+  overflow: hidden;
+}
+
+.Panel .title {
+  padding: 10px 20px;
+  color: white;
+  bottom: 0;
+  position: absolute;
+  font-size: 1.7em;
+  left: 0;
+  right: 0;
+  background: rgba(14,25,30,0.5);
+  box-shadow: 2px 0 2px 0 rgba(0,0,0,0.5);
+  -moz-box-shadow: 2px 0 2px 0 rgba(0,0,0,0.5);
+  -webkit-box-shadow: 2px 0 2px 0 rgba(0,0,0,0.5);
+  -o-box-shadow: 2px 0 2px 0 rgba(0,0,0,0.5);
+  -ms-box-shadow: 2px 0 2px 0 rgba(0,0,0,0.5);
+}
+
+.Panel #figures {
+  padding-top: 10px;
+}
+
+.Panel .img_container {
+  background-image: url('../images/hq.jpg');
+  position: relative;
+  height: 300px;
+  background-size: cover;
+  -moz-background-size: cover;
+  -webkit-background-size: cover;
+  -o-background-size: cover;
+  -ms-background-size: cover;
+  background-position: center;
+}
+
+.Panel .description {
+  position: relative;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.Panel .description > .location {
+  font-weight: bold;
+  font-size: 1.3em;
+  padding-left: 20px;
+  padding-top: 20px;
+}
+
+.Panel .description > .wrapper {
+  position: relative;
+  padding: 0 20px 20px 20px;
+  max-width: 1000px;
+  font-size: 1em;
+}
+
+.Panel .img_credit {
+  font-size: 0.8em;
+  text-align: right;
+  color: grey;
+}
+
+.Panel .but {
+  margin-top: 10px;
+}
+
+.Panel .navigation-buttons {
+  margin: 0 -10px;
+  padding: 20px 30px;
+  background: #eeeeee;
+  position: relative;
+  box-shadow: 2px 0 2px 0 rgba(0,0,0,0.5) inset;
+  -moz-box-shadow: 2px 0 2px 0 rgba(0,0,0,0.5) inset;
+  -webkit-box-shadow: 2px 0 2px 0 rgba(0,0,0,0.5) inset;
+  -o-box-shadow: 2px 0 2px 0 rgba(0,0,0,0.5) inset;
+  -ms-box-shadow: 2px 0 2px 0 rgba(0,0,0,0.5) inset;
+}
+
+.Panel .navigation-buttons button {
+  min-width: 104px;
+  margin: 0 7px;
+}
+
+.Panel .view.overview .table .value {
+  font-size: 1.5em;
+}
+
+.Panel .view.overview .table #prj_cat_text {
+  margin-left: 50px;
+}
+
+.chart {
+  fill: black;
+}
+
+.chart .axis path,
+.chart .axis line {
+  fill: none;
+  stroke: black;
+  shape-rendering: crispEdges;
+}
+
+.chart .axis text {
+  font-family: sans-serif;
+  font-size: 11px;
+  fill: black;
+}
+
+.chart .value_bar {
+  font-family: sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  fill: white;
+  text-anchor: middle;
+}
+
+.use-base .toggle-radio {
+  position: absolute;
+  right: 0;
+  right: 20px;
+  height: 40px;
+  box-shadow: 3px 3px 10px rgba(0,0,0,.3);
+  -moz-box-shadow: 3px 3px 10px rgba(0,0,0,.3);
+  -webkit-box-shadow: 3px 3px 10px rgba(0,0,0,.3);
+  -o-box-shadow: 3px 3px 10px rgba(0,0,0,.3);
+  -ms-box-shadow: 3px 3px 10px rgba(0,0,0,.3);
+  padding: 0;
+}
+
+.use-base .toggle-radio label {
+  width: auto;
+  padding: 10px;
+}
+
+.africa-container .all-path {
+  fill: #333333;
+  stroke: #666666;
+  stroke-width: 0.2;
+}
+
+.africa-container circle {
+  fill: #a50000;
+  stroke: #ffffff;
+}
+
+.africa-container circle.active {
+  fill: #c46868;
+  stroke: #973b3b;
+}
+
+.africa-container circle.active:hover {
+  fill: #973b3b;
+  stroke: #792f2f;
+}
+
+.africa-container circle:hover {
+  cursor: pointer;
+  fill: #ffffff;
+  stroke: #b3b3b3;
+}
+
+footer {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 50%;
+  opacity: .7;
+  filter: alpha(opacity=70);
+}
+
+footer .logojpp {
+  width: 120px;
+  display: block;
+  margin-top: 20px;
+}
+
+footer .logojpp img {
+  width: 65%;
+}
+
+footer .credit {
+  color: #d3d3d3;
+  z-index: 9999;
+  position: absolute;
+  right: 20px;
+  bottom: 14px;
+  font-size: 0.68em;
+  padding: 0;
+}
+
+.Panel {
+  transition-delay: 1s;
+  transition-property: right;
+  -moz-transition-property: right;
+  -webkit-transition-property: right;
+  -o-transition-property: right;
+  -ms-transition-property: right;
+  right: 0;
+  transition-duration: .50s;
+  -moz-transition-duration: .50s;
+  -webkit-transition-duration: .50s;
+  -o-transition-duration: .50s;
+  -ms-transition-duration: .50s;
+}
+
+.africa-container,
+.toggle-radio {
+  transition-property: opacity;
+  -moz-transition-property: opacity;
+  -webkit-transition-property: opacity;
+  -o-transition-property: opacity;
+  -ms-transition-property: opacity;
+  transition-duration: 2s;
+  -moz-transition-duration: 2s;
+  -webkit-transition-duration: 2s;
+  -o-transition-duration: 2s;
+  -ms-transition-duration: 2s;
+}
+
+.use-base .toggle-radio {
+  width: auto;
+  transition-delay: 2s;
+}
+
+.use-base .toggle-radio:not(.old-ie) [type="radio"]:checked + label {
+  background: #fb9d04;
+}
+
+#loader {
+  transition-property: opacity;
+  -moz-transition-property: opacity;
+  -webkit-transition-property: opacity;
+  -o-transition-property: opacity;
+  -ms-transition-property: opacity;
+  transition-duration: 1s;
+  -moz-transition-duration: 1s;
+  -webkit-transition-duration: 1s;
+  -o-transition-duration: 1s;
+  -ms-transition-duration: 1s;
+  transition-timing-function: easeInCubic;
+  -moz-transition-timing-function: easeInCubic;
+  -webkit-transition-timing-function: easeInCubic;
+  -o-transition-timing-function: easeInCubic;
+  -ms-transition-timing-function: easeInCubic;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+
+.on-loading #loader {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+
+.on-loading .Panel {
+  right: -2000px;
+}
+
+.on-loading .africa-container,
+.on-loading .toggle-radio {
+  opacity: 0;
+  filter: alpha(opacity=0);
+}

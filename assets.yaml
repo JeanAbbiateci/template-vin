@@ -1,0 +1,32 @@
+--- 
+css_all:
+  #filters: cssmin
+  output: gen/style.css
+  contents: 
+    - "../assets/css/*.css"
+    - contents: "../assets/ccss/*.ccss"
+      filters: clevercss
+
+js_all: 
+  output: gen/scripts.js
+  filters: jsmin
+  contents:
+    - "../assets/js/jquery-mini.js"
+    - "../assets/js/d3.js"
+    # - "../assets/js/chart.js"
+    - "../assets/js/queue.js"
+    - "../assets/js/underscore.js"
+    - "../assets/js/raf.js"
+    - "../assets/js/topojson.js"
+    - "../assets/js/tabletop.js"
+    - "../assets/js/bootstrap.min.js"
+    - "../assets/js/jquery.qtip.js"
+    - "../assets/js/perfect-scrollbar-0.4.8.with-mousewheel.min.js"
+    - "../assets/js/heartcode-canvasloader-min.js"
+    - contents:
+      - "../assets/coffee/filters.coffee"
+      - "../assets/coffee/map.coffee"
+      - "../assets/coffee/panel.coffee"
+      - "../assets/coffee/chart.coffee"
+      - "../assets/coffee/navigation.coffee"
+      filters: coffeescript
